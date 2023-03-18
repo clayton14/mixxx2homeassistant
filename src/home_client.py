@@ -32,12 +32,16 @@ def get_services():
     pass
 
 
-color = random.randint(1, 360)
 
-data = {
+
+
+while 1:
+    color = random.randint(1, 360)
+    data = {
+    
     "hs_color": [color, 100],
-    "area_id": "den"
-}
-
-print(update_status(data))
-print(color)
+    "entity_id": "light.sofa_light"
+    }
+    time.sleep(0.1)
+    print(update_status(data))
+    print(color)

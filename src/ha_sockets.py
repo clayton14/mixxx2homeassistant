@@ -28,15 +28,13 @@ async def start():
                     "brightness": 250
                 },
                 "target": {
-                    "entity_id": "light.sofa_light"
+                    "area_id": "den"
                 }
             }
 
-            
-
             await auth(ws)
             while 1:
-                time.sleep(0.1)
+                #time.sleep(0)
                 data["id"] += 1
                 data["service_data"]["hs_color"][0] = random.randint(0, 360)
                 print(data["service_data"]["hs_color"][0])
