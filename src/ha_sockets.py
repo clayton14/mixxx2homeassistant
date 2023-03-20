@@ -6,6 +6,8 @@ import random, time
 import mido, rtmidi
 
 
+# Used to interface with Home Assistant using the websockets API
+
 dotenv.load_dotenv()
 
 base_url = os.getenv("SERVER_ENDPOINT")
@@ -79,8 +81,6 @@ def midi_to_command(port:str):
     #             print('beat')
     #         if msg.note == 52 and msg.type == 'note_on':
     #             print(msg.velocity + 50)
-
-
 
 
 
