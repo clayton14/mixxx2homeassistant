@@ -33,12 +33,15 @@ async def start():
 
             await auth(ws)
             while 1:
-                #time.sleep(1)
-                data["id"] += 1
-                time.sleep(0.1)
-                data["service_data"]["hs_color"][0] = random.randint(0, 360)
-                print(data["service_data"]["hs_color"][0])
-                await send_command(ws, data)
+               with mido.open_input() as inport:
+                    for msg in inport:
+                        if msg.note == 50 and msg.type == 'note_on':
+                            print('beat')
+                            data["id"] += 1
+                            time.sleep(0.1)
+                            data["service_data"]["hs_color"][0] = random.randint(0, 360)
+                            print(data["service_data"]["hs_color"][0])
+                            await send_command(ws, data)
 
     except (TimeoutError, OSError) as error:
         cprint(
