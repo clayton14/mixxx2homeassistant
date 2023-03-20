@@ -11,7 +11,7 @@ dotenv.load_dotenv()
 base_url = os.getenv("SERVER_ENDPOINT")
 token = os.getenv("TOKEN")
 
-
+PLATFORM = platform.system()
 
 async def start():
     try:
@@ -33,9 +33,9 @@ async def start():
 
             await auth(ws)
             while 1:
-                # time.sleep(0)
+                #time.sleep(1)
                 data["id"] += 1
-                #time.sleep(0.1)
+                time.sleep(0.1)
                 data["service_data"]["hs_color"][0] = random.randint(0, 360)
                 print(data["service_data"]["hs_color"][0])
                 await send_command(ws, data)
@@ -68,14 +68,16 @@ async def auth(ws):
 
 def midi_to_command(port:str):
     """
-    converts midi values to ha command
+    converts midi values to ha command 
     """
-    with mido.open_input(port, True) as inport:
-        for msg in inport:
-            if msg.note == 50 and msg.type == 'note_on':
-                print('beat')
-            if msg.note == 52 and msg.type == 'note_on':
-                print(msg.velocity + 50)
+    # with mido.open_input(port, True) as inport:
+    #     for msg in inport:
+    #         if msg.note == 50 and msg.type == 'note_on':
+    #             print('beat')
+    #         if msg.note == 52 and msg.type == 'note_on':
+    #             print(msg.velocity + 50)
+
+
 
 
 
