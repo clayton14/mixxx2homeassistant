@@ -1,18 +1,16 @@
 import asyncio
 import websockets
-import json
-import os
-import sys
-import dotenv
+import os, sys, json, dotenv, platform
 from termcolor import cprint
-import random
-import time
+import random, time
+import mido, rtmidi
+
+
 dotenv.load_dotenv()
 
 base_url = os.getenv("SERVER_ENDPOINT")
 token = os.getenv("TOKEN")
-# print(f"URL -> {base_url}\nTOKEN -> {token}")
-# token = "l"
+
 
 
 async def start():
@@ -28,22 +26,25 @@ async def start():
                     "brightness": 250
                 },
                 "target": {
-                    "area_id": "den"
+                    #"entity_id": "light.ohad_light"
+                    "entity_id": "light.rave"
                 }
             }
 
             await auth(ws)
             while 1:
-                #time.sleep(0)
+                # time.sleep(0)
                 data["id"] += 1
+                #time.sleep(0.1)
                 data["service_data"]["hs_color"][0] = random.randint(0, 360)
                 print(data["service_data"]["hs_color"][0])
                 await send_command(ws, data)
 
-    except (TimeoutError, OSError):
+    except (TimeoutError, OSError) as error:
         cprint(
             "[CONNECTION ERROR] Make sure you are connected to the correct network", "yellow")
         return None
+
 
 async def auth(ws):
     """
@@ -64,12 +65,46 @@ async def auth(ws):
         cprint("=> Auth succuss", "green")
 
 
+
+def midi_to_command(port:str):
+    """
+    converts midi values to ha command
+    """
+    with mido.open_input(port, True) as inport:
+        for msg in inport:
+            if msg.note == 50 and msg.type == 'note_on':
+                print('beat')
+            if msg.note == 52 and msg.type == 'note_on':
+                print(msg.velocity + 50)
+
+
+
+async def bpm_to_command():
+    """
+    Convrts bpm to 
+    """
+    pass
+
+
+async def set_color():
+    """
+    pass
+    """
+    pass
+
+
+async def off():
+    """
+    Turns lights off
+    """
+    pass
+
+
 async def send_command(ws, data):
     command = await ws.send(json.dumps(data))
-    #print(command)
     stat = await ws.recv()
-    #print(stat)
 
-asyncio.run(start())
+#asyncio.run(start())
+# asyncio.run(midi_to_command("portaaaaa"))
 
-
+midi_to_command("aaaaaaa")
