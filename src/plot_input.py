@@ -73,7 +73,7 @@ def audio_callback(indata, frames, time, status):
     q.put(indata[::args.downsample, mapping])
 
 
-def audio_to_color(indata):
+def audio_to_rgb(indata):
     """
     Get audio data and return random color value
     """
@@ -92,7 +92,11 @@ def audio_to_color(indata):
                 random.randint(85, 255),
             )
 
+def clamp(x): 
+  return max(0, min(x, 255))
 
+def update_clolr():
+    pass
 
 def update_plot(frame):
     """This is called by matplotlib for each plot update.
@@ -105,8 +109,14 @@ def update_plot(frame):
     while True:
         try:
             data = q.get_nowait()
-            print(audio_to_color(data))
-            fig.set_facecolor(audio_to_color(q.get_nowait()))
+            color = audio_to_rgb(data)
+            if color == None:
+                color =(0,0,0)
+
+            hex_color = "#{0:02x}{1:02x}{2:02x}".format(clamp(color[0]), clamp(color[1]), clamp(color[2]))
+            if hex_color == None:
+                print(hex_color)
+                hex_color = "#000000"
 
         except queue.Empty:
             break
@@ -115,6 +125,7 @@ def update_plot(frame):
         plotdata[-shift:, :] = data
     for column, line in enumerate(lines):
         line.set_ydata(plotdata[:, column])
+        line.set_color(hex_color)
     return lines
 
 
@@ -124,10 +135,10 @@ try:
         args.samplerate = device_info['default_samplerate']
 
     length = int(args.window * args.samplerate / (1000 * args.downsample))
-    print(length)
     plotdata = np.zeros((length, len(args.channels)))
     fig, ax = plt.subplots()
-    lines = ax.plot(plotdata)
+
+    lines = ax.plot(plotdata) # color can go here
     if len(args.channels) > 1:
         ax.legend([f'channel {c}' for c in args.channels],
                   loc='lower left', ncol=len(args.channels))
@@ -137,10 +148,6 @@ try:
     ax.tick_params(bottom=False, top=False, labelbottom=False,
                    right=False, left=False, labelleft=False)
     fig.tight_layout(pad=0)
-
-    #set color
-
-
 
     stream = sd.InputStream(
         device=args.device, channels=max(args.channels),
