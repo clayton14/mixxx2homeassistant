@@ -2,7 +2,7 @@
 
 # code found on python oundevice examples
 # https://github.com/spatialaudio/python-sounddevice/blob/0.4.6/examples/plot_input.py
-# https://stackoverflow.com/questions/56633079/what-do-i-measure-with-pyaudio
+
 """Plot the live microphone signal(s) with matplotlib.
 
 Matplotlib and NumPy have to be installed.
@@ -18,13 +18,13 @@ import numpy as np
 import sounddevice as sd
 import random
 
-
 def int_or_str(text):
     """Helper function for argument parsing."""
     try:
         return int(text)
     except ValueError:
         return text
+
 
 
 parser = argparse.ArgumentParser(add_help=False)
@@ -67,9 +67,9 @@ q = queue.Queue()
 
 def audio_callback(indata, frames, time, status):
     """This is called (from a separate thread) for each audio block."""
-    global rms
-    rms = audioop.rms(in_data, WIDTH) / 32767
 
+    # global rms
+    # rms = audioop.rms(in_data, WIDTH) / 32767
     if status:
         print(status, file=sys.stderr)
     # Fancy indexing with mapping creates a (necessary!) copy:
@@ -80,31 +80,28 @@ def audio_to_hex(indata):
     """
     Get audio data and return random color value
     """
-    data = indata[0][0]
+    data = indata[0][0] 
     if data != None:
         if data > 0:
             color = (
-                random.randint(0, 85),
-                random.randint(0, 85),
-                random.randint(0, 85),
-            )
+                    random.randint(0, 85),
+                    random.randint(0, 85),
+                    random.randint(0, 85),
+                )
         if data < 0:
             color = (
-                random.randint(85, 255),
-                random.randint(85, 255),
-                random.randint(85, 255),
-            )
-
+                    random.randint(85, 255),
+                    random.randint(85, 255),
+                    random.randint(85, 255),
+                )
+    
     return "#{0:02x}{1:02x}{2:02x}".format(clamp(color[0]), clamp(color[1]), clamp(color[2]))
 
-
-def clamp(x):
-    return max(0, min(x, 255))
-
+def clamp(x): 
+  return max(0, min(x, 255))
 
 def update_clolr():
     pass
-
 
 def update_plot(frame):
     """This is called by matplotlib for each plot update.
@@ -120,16 +117,16 @@ def update_plot(frame):
             if data[0][0] == None:
                 print("DIE")
                 sys.exit(1)
-            # color = audio_to_hex(data)
+            #color = audio_to_hex(data)
         except queue.Empty:
-            # data = [0.0, 0.0]
+            #data = [0.0, 0.0]
             break
         shift = len(data)
         plotdata = np.roll(plotdata, -shift, axis=0)
         plotdata[-shift:, :] = data
     for column, line in enumerate(lines):
         line.set_ydata(plotdata[:, column])
-        # line.set_color((data[0], data[1], 0.3))
+        #line.set_color((data[0], data[1], 0.3))
     return lines
 
 
@@ -142,7 +139,7 @@ try:
     plotdata = np.zeros((length, len(args.channels)))
     fig, ax = plt.subplots()
 
-    lines = ax.plot(plotdata)  # color can go here
+    lines = ax.plot(plotdata) # color can go here
     if len(args.channels) > 1:
         ax.legend([f'channel {c}' for c in args.channels],
                   loc='lower left', ncol=len(args.channels))
@@ -156,7 +153,7 @@ try:
     stream = sd.InputStream(
         device=args.device, channels=max(args.channels),
         samplerate=args.samplerate, callback=audio_callback)
-
+    
     ani = FuncAnimation(fig, update_plot, interval=args.interval, blit=True)
     with stream:
         plt.show()
