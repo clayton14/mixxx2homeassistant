@@ -77,20 +77,22 @@ def audio_to_rgb(indata):
     """
     Get audio data and return random color value
     """
-    
     data = indata[0][0] 
-    if data > 0:
-        return (
-                random.randint(0, 85),
-                random.randint(0, 85),
-                random.randint(0, 85),
-            )
-    if data < 0:
-        return (
-                random.randint(85, 255),
-                random.randint(85, 255),
-                random.randint(85, 255),
-            )
+    if data != None:
+        if data > 0:
+            return (
+                    random.randint(0, 85),
+                    random.randint(0, 85),
+                    random.randint(0, 85),
+                )
+        if data < 0:
+            return (
+                    random.randint(85, 255),
+                    random.randint(85, 255),
+                    random.randint(85, 255),
+                )
+    
+      
 
 def clamp(x): 
   return max(0, min(x, 255))
@@ -106,23 +108,29 @@ def update_plot(frame):
 
     """
     global plotdata
+    global hex_color
     while True:
         try:
             data = q.get_nowait()
+            if data[0][0] == None:
+                print("DIE")
+                sys.exit(1)
             color = audio_to_rgb(data)
-            if color == None:
-                color =(0,0,0)
-
+            print(f"R:{color[0]} G:{color[1]} B:{color[2]}")
             hex_color = "#{0:02x}{1:02x}{2:02x}".format(clamp(color[0]), clamp(color[1]), clamp(color[2]))
-            if hex_color == None:
-                print(hex_color)
-                hex_color = "#000000"
-
+            print(hex_color)
         except queue.Empty:
             break
         shift = len(data)
         plotdata = np.roll(plotdata, -shift, axis=0)
         plotdata[-shift:, :] = data
+        print(f"RGB: {color}")
+        if color == None:
+            color = (0,0,0)
+        hex_color = "#{0:02x}{1:02x}{2:02x}".format(clamp(color[0]), clamp(color[1]), clamp(color[2]))
+        print(hex_color)
+        if hex_color == None:
+            hex_color = "#000000"
     for column, line in enumerate(lines):
         line.set_ydata(plotdata[:, column])
         line.set_color(hex_color)
