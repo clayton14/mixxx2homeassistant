@@ -7,7 +7,7 @@ import json
 import time
 dotenv.load_dotenv()
 
-base_url = os.getenv("SERVER_ENDPOINT")
+base_url = "http://192.168.0.5:8123/api"
 token = os.getenv("TOKEN")
 
 print(token)
@@ -17,9 +17,7 @@ headers = {
     "content-type": "application/json",
 }
 
-
 print(base_url)
-
 
 def update_status(data):
     data = json.dumps(data, indent=4)
@@ -27,21 +25,16 @@ def update_status(data):
                     headers=headers, data=data)
     return response
 
-
 def get_services():
     pass
-
-
-
 
 
 while 1:
     color = random.randint(1, 360)
     data = {
-    
     "hs_color": [color, 100],
-    "entity_id": "light.sofa_light"
+    "entity_id": "light.ohad_light"
     }
-    time.sleep(0.1)
+    # time.sleep(0.1)
     print(update_status(data))
     print(color)
