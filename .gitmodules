@@ -1,0 +1,3 @@
+[submodule "src/Realtime_PyAudio_FFT"]
+	path = src/Realtime_PyAudio_FFT
+	url = git@github.com:clayton14/Realtime_PyAudio_FFT.git
