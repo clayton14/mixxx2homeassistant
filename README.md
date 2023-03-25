@@ -1,3 +1,3 @@
 # mixxx2homeassistant
 
-mixxx2homeassistant is a python application used to interface with [mixxx](https://mixxx.org/) and smarthome devices ether via [homeassisant](https://www.home-assistant.io/)
+mixxx2homeassistant is a python communication application used to allow [mixxx](https://mixxx.org/) to talk to smart-home devices via [homeassisant](https://www.home-assistant.io/)
