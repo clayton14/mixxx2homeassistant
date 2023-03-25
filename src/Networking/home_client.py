@@ -7,7 +7,7 @@ import json
 import time
 dotenv.load_dotenv()
 
-base_url = "http://192.168.0.5:8123/api"
+base_url = "http://127.0.0.1:8123/api"
 token = os.getenv("TOKEN")
 
 print(token)
@@ -33,8 +33,8 @@ while 1:
     color = random.randint(1, 360)
     data = {
     "hs_color": [color, 100],
-    "entity_id": "light.ohad_light"
+    "entity_id": "light.wiz1"
     }
-    # time.sleep(0.1)
+    time.sleep(0.1)
     print(update_status(data))
     print(color)

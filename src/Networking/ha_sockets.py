@@ -3,8 +3,7 @@ import websockets
 import os, sys, json, dotenv, platform
 from termcolor import cprint
 import random, time
-import mido, rtmidi
-
+import yaml
 
 # Used to interface with Home Assistant using the websockets API
 
@@ -12,8 +11,15 @@ dotenv.load_dotenv()
 
 base_url = os.getenv("SERVER_ENDPOINT")
 token = os.getenv("TOKEN")
-
+print(base_url)
 PLATFORM = platform.system()
+DELAY = 0 # delay in between command send (in seconds)
+
+
+def load_yml(file: str):
+    #TODO loads yaml file to and make json commans
+    pass
+
 
 async def start():
     try:
@@ -29,21 +35,20 @@ async def start():
                 },
                 "target": {
                     #"entity_id": "light.ohad_light"
-                    "entity_id": "light.rave"
+                    "entity_id": "light.audio",
+                    #"entity_id": "light.wiz1",
+                    
                 }
             }
 
             await auth(ws)
-            while 1:
-               with mido.open_input() as inport:
-                    for msg in inport:
-                        if msg.note == 50 and msg.type == 'note_on':
-                            print('beat')
-                            data["id"] += 1
-                            time.sleep(0.1)
-                            data["service_data"]["hs_color"][0] = random.randint(0, 360)
-                            print(data["service_data"]["hs_color"][0])
-                            await send_command(ws, data)
+            while 1: 
+                data["id"] += 1
+                #time.sleep(0.1)
+                data["service_data"]["hs_color"][0] = random.randint(0, 360)
+                data["service_data"]["brightness"] = random.randint(150, 250)
+                print(data["service_data"]["hs_color"][0], data["service_data"]["brightness"])
+                await send_command(ws, data)
 
     except (TimeoutError, OSError) as error:
         cprint(
@@ -54,7 +59,7 @@ async def start():
 async def auth(ws):
     """
         completes the server client auth handshake
-        returns: websocket session
+        args: websocket session
     """
     message = await ws.recv()
     message = await ws.send(json.dumps({
@@ -66,21 +71,10 @@ async def auth(ws):
     if auth_status["type"] == "auth_invalid":
         cprint(
             "[ERROR] Invalid auth token! Please generate an auth token in Home Assistant", "red")
+        sys.exit(1)
     if auth_status["type"] == "auth_ok":
         cprint("=> Auth succuss", "green")
 
-
-
-def midi_to_command(port:str):
-    """
-    converts midi values to ha command 
-    """
-    # with mido.open_input(port, True) as inport:
-    #     for msg in inport:
-    #         if msg.note == 50 and msg.type == 'note_on':
-    #             print('beat')
-    #         if msg.note == 52 and msg.type == 'note_on':
-    #             print(msg.velocity + 50)
 
 
 
@@ -109,7 +103,5 @@ async def send_command(ws, data):
     command = await ws.send(json.dumps(data))
     stat = await ws.recv()
 
-#asyncio.run(start())
-# asyncio.run(midi_to_command("portaaaaa"))
+asyncio.run(start())
 
-midi_to_command("aaaaaaa")
